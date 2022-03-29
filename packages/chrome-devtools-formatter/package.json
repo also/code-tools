@@ -1,0 +1,11 @@
+{
+  "name": "@also/chrome-devtools-formatter",
+  "version": "0.1.0",
+  "dependencies": {
+    "acorn": "8.6.0",
+    "source-map": "0.7.3"
+  },
+  "devDependencies": {
+    "@types/estree": "0.0.50"
+  }
+}

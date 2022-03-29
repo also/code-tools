@@ -1,0 +1,13 @@
+{
+  "name": "@also/coverage-viz",
+  "version": "0.1.0",
+  "dependencies": {
+    "@also/chrome-devtools-formatter": "workspace:*",
+    "@also/mapped-coverage": "workspace:*",
+    "@also/source-maps": "workspace:*",
+    "monaco-editor": "0.33.0"
+  },
+  "devDependencies": {
+    "esbuild": "0.14.28"
+  }
+}
