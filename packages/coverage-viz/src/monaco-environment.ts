@@ -1,3 +1,11 @@
+import { Environment } from "monaco-editor";
+
+declare global {
+  interface Window {
+    MonacoEnvironment: Environment;
+  }
+}
+
 // https://github.com/microsoft/monaco-editor/blob/ca2692a0dc1ef3ca0e0f8a76fce5ae60b10a1ebe/samples/browser-esm-esbuild/index.js
 /*
 The MIT License (MIT)
