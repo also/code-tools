@@ -1,16 +1,11 @@
 import "./monaco-environment.js";
 import { getData } from "./coverage-example-data.js";
-import { generate } from "./generate.js";
+import { CodeWithCoverage, generate } from "./generate.js";
 import { findMapping, rangeOfMapping } from "@also/source-maps/lib/search";
 import monacoTypes from "monaco-editor";
 import { RangeRect, render, sizeCanvas } from "./overlay.js";
 // @ts-expect-error
 const monaco: typeof monacoTypes = require("monaco-editor/esm/vs/editor/editor.main.js");
-
-const canvas = document.getElementById("canvas")! as HTMLCanvasElement;
-const c = canvas.getContext("2d")!;
-
-sizeCanvas(canvas, c);
 
 interface PaneData {
   mappings: Int32Array;
@@ -96,6 +91,37 @@ function getHovered(
   };
 }
 
+const options: monacoTypes.editor.IStandaloneEditorConstructionOptions = {
+  language: "javascript",
+  readOnly: true,
+  automaticLayout: true,
+  scrollBeyondLastLine: false,
+  // TODO: the docs says the default is off and that means it should never wrap
+  // but text will wrap if the initial value in the editor has really long lines
+  wordWrap: "on",
+  // https://github.com/microsoft/monaco-editor/issues/2940
+  // files with lots of interesting characters will cause a warning to be displayed
+  // asking to disable highlighting, but clicking does nothing
+  unicodeHighlight: {
+    ambiguousCharacters: false,
+  },
+};
+
+function getOriginal(
+  data: CodeWithCoverage,
+  index: number
+): PaneData | undefined {
+  if (index === -1) {
+    return undefined;
+  }
+  const mappings = data.map.sourceMappings[index]!;
+  return {
+    mappings,
+    offsetMappings: mappings.subarray(3),
+    value: data.sourcesContent[index],
+  };
+}
+
 async function run() {
   const inputData = await getData();
   const start = Date.now();
@@ -107,21 +133,10 @@ async function run() {
   const end = Date.now();
   console.log(`Generated in ${end - start}ms`);
 
-  const options: monacoTypes.editor.IStandaloneEditorConstructionOptions = {
-    language: "javascript",
-    readOnly: true,
-    automaticLayout: true,
-    scrollBeyondLastLine: false,
-    // TODO: the docs says the default is off and that means it should never wrap
-    // but text will wrap if the initial value in the editor has really long lines
-    wordWrap: "on",
-    // https://github.com/microsoft/monaco-editor/issues/2940
-    // files with lots of interesting characters will cause a warning to be displayed
-    // asking to disable highlighting, but clicking does nothing
-    unicodeHighlight: {
-      ambiguousCharacters: false,
-    },
-  };
+  const canvas = document.getElementById("canvas")! as HTMLCanvasElement;
+  const c = canvas.getContext("2d")!;
+
+  sizeCanvas(canvas, c);
 
   const generatedEditor = monaco.editor.create(
     document.getElementById("generated")!,
@@ -179,9 +194,7 @@ async function run() {
     }
   });
 
-  const originalModel = originalEditor.getModel()!;
-
-  const decorations = generatedEditor.deltaDecorations(
+  generatedEditor.deltaDecorations(
     [],
     [
       ...data.coverage.map((c) => ({
@@ -209,25 +222,12 @@ async function run() {
     ]
   );
 
-  const originalStatusDomNode = document.getElementById("original-status")!;
-
-  function getOriginal(index: number): PaneData | undefined {
-    if (index === -1) {
-      return undefined;
-    }
-    const mappings = data.map.sourceMappings[index]!;
-    return {
-      mappings,
-      offsetMappings: mappings.subarray(3),
-      value: data.sourcesContent[index],
-    };
-  }
   const original: Pane = {
     isGenerated: false,
     editor: originalEditor,
-    model: originalModel,
+    model: originalEditor.getModel()!,
     domNode: originalEditor.getDomNode()!,
-    statusDomNode: originalStatusDomNode,
+    statusDomNode: document.getElementById("original-status")!,
     hoverDecorations: [],
     data: undefined,
   };
@@ -248,7 +248,7 @@ async function run() {
   let prevSourceIndex: number | undefined;
   function updateOriginal(index: number) {
     if (index !== prevSourceIndex) {
-      original.data = getOriginal(index);
+      original.data = getOriginal(data, index);
       original.model.setValue(original?.data?.value ?? "");
       prevSourceIndex = index;
     }
