@@ -29,7 +29,7 @@ export function makeOriginalMappings({
     sourceData.data[j + 2] = mappings[i + 2];
     sourceData.data[j + 3] = mappings[i + 3];
     sourceData.data[j + 4] = mappings[i + 4];
-    sourceData.data[j + 5] = mappings[i + 5];
+    sourceData.data[j + 5] = i;
     sourceData.len += 6;
   }
 
