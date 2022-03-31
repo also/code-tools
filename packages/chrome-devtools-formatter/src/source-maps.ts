@@ -10,10 +10,10 @@ export async function toMappings(mapper: Mapper) {
       data = expanded;
     }
 
-    data[len + 0] = m.generated.line - 1;
+    data[len + 0] = m.generated.line;
     data[len + 1] = m.generated.column;
     data[len + 2] = -1;
-    data[len + 3] = m.original.line - 1;
+    data[len + 3] = m.original.line;
     data[len + 4] = m.original.column;
     data[len + 5] = -1;
     len += 6;

@@ -46,8 +46,8 @@ export class Mapper {
         this.mapping.original[i]
       );
       yield {
-        generated: { line: generated[0] + 1, column: generated[1] },
-        original: { line: original[0] + 1, column: original[1] },
+        generated: { line: generated[0], column: generated[1] },
+        original: { line: original[0], column: original[1] },
       };
     }
   }
