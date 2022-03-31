@@ -57,18 +57,32 @@ export function toPoint(indices: number[], offset: number) {
   return undefined;
 }
 
-interface Position {
+export interface Position {
   line: number;
   column: number;
 }
 
-export function* mapCoverageWithMappings(
+export interface CoverageEntry {
+  start: Position;
+  end: Position;
+}
+
+export interface MappedCoverage {
+  coverage: CoverageEntry[];
+  mappingRangeIndices: Int32Array;
+}
+
+export function mapCoverageWithMappings(
   mappings: Int32Array,
   coverage: ChromeBasicCoverage,
   indices: number[]
-): Generator<{ start: Position; end: Position }> {
+): MappedCoverage {
+  const mappingRangeIndices = new Int32Array(mappings.length / 6).fill(-1);
   const generatedMappings = mappings.subarray(3);
+  const result = [];
+  let i = 0;
   for (const r of coverage.ranges) {
+    i++;
     const start = toPoint(indices, r.start);
     const end = toPoint(indices, r.end);
     if (!(start && end)) {
@@ -91,14 +105,62 @@ export function* mapCoverageWithMappings(
       // throw new Error("missing end mapping");
     }
 
-    yield {
+    const max = endMapping / 6;
+
+    for (let j = startMapping / 6; j <= max; j += 1) {
+      mappingRangeIndices[j] = i;
+    }
+
+    result.push({
       start: {
         line: mappings[startMapping] + 1,
         column: mappings[startMapping + 1],
       },
       end: { line: mappings[endMapping] + 1, column: mappings[endMapping + 1] },
-    };
+    });
   }
+
+  return { coverage: result, mappingRangeIndices };
+}
+
+export function makeOriginalCoverage(
+  mappedCoverage: MappedCoverage,
+  originalMappings: Int32Array
+) {
+  const result: CoverageEntry[] = [];
+  for (let i = 0; i < originalMappings.length; i += 6) {
+    const index = originalMappings[i + 5];
+    let covered = mappedCoverage.mappingRangeIndices[index / 6] !== -1;
+
+    if (covered) {
+      const firstMapping = i;
+      let lastMapping = firstMapping;
+      while (true) {
+        i += 6;
+        if (i >= originalMappings.length) {
+          break;
+        }
+        const endIndex = originalMappings[i + 5];
+        if (mappedCoverage.mappingRangeIndices[endIndex / 6] === -1) {
+          break;
+        }
+        lastMapping = i;
+      }
+
+      result.push({
+        start: {
+          line: originalMappings[firstMapping + 3] + 1,
+          column: originalMappings[firstMapping + 4],
+        },
+        end: {
+          line: originalMappings[lastMapping + 3] + 1,
+          column: originalMappings[lastMapping + 4],
+        },
+      });
+    }
+  }
+
+  return result;
 }
 
 // https://github.com/puppeteer/puppeteer/blob/8ff9d598bf4afd10cbc61ca9579b7bd38edb8026/src/common/Coverage.ts#L412

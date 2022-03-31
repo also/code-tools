@@ -4,6 +4,7 @@ import { CodeWithCoverage, generate } from "./generate.js";
 import { findMapping, rangeOfMapping } from "@also/source-maps/lib/search";
 import monacoTypes from "monaco-editor";
 import { RangeRect, render, sizeCanvas } from "./overlay.js";
+import { CoverageEntry, makeOriginalCoverage } from "@also/mapped-coverage/lib";
 // @ts-expect-error
 const monaco: typeof monacoTypes = require("monaco-editor/esm/vs/editor/editor.main.js");
 
@@ -20,6 +21,7 @@ interface Pane {
   domNode: HTMLElement;
   statusDomNode: HTMLElement;
   hoverDecorations: string[];
+  coverageDecorations: string[];
   data: PaneData | undefined;
 }
 
@@ -122,6 +124,35 @@ function getOriginal(
   };
 }
 
+function updateCoverageDecorations(pane: Pane, coverage: CoverageEntry[]) {
+  pane.coverageDecorations = pane.editor.deltaDecorations(
+    pane.coverageDecorations,
+    coverage.map((c) => ({
+      range: new monaco.Range(
+        c.start.line,
+        c.start.column + 1,
+        c.end.line,
+        c.end.column + 1
+      ),
+      options: {
+        hoverMessage: [{ value: "```" + JSON.stringify(c, null, 2) + "```" }],
+        zIndex: 0,
+        className: "covered",
+        minimap: {
+          color: "#00ff00",
+          // 1 = inline
+          // https://github.com/microsoft/monaco-editor/blob/ca2692a/website/typedoc/monaco.d.ts#L1414
+          position: 2,
+        },
+        overviewRuler: {
+          color: "#daead1",
+          position: 1,
+        },
+      },
+    }))
+  );
+}
+
 async function run() {
   const inputData = await getData();
   const start = Date.now();
@@ -194,34 +225,6 @@ async function run() {
     }
   });
 
-  generatedEditor.deltaDecorations(
-    [],
-    [
-      ...data.coverage.map((c) => ({
-        range: new monaco.Range(
-          c.start.line,
-          c.start.column + 1,
-          c.end.line,
-          c.end.column + 1
-        ),
-        options: {
-          zIndex: 0,
-          className: "covered",
-          minimap: {
-            color: "#00ff00",
-            // 1 = inline
-            // https://github.com/microsoft/monaco-editor/blob/ca2692a/website/typedoc/monaco.d.ts#L1414
-            position: 2,
-          },
-          overviewRuler: {
-            color: "#daead1",
-            position: 1,
-          },
-        },
-      })),
-    ]
-  );
-
   const original: Pane = {
     isGenerated: false,
     editor: originalEditor,
@@ -229,6 +232,7 @@ async function run() {
     domNode: originalEditor.getDomNode()!,
     statusDomNode: document.getElementById("original-status")!,
     hoverDecorations: [],
+    coverageDecorations: [],
     data: undefined,
   };
   const generated: Pane = {
@@ -238,6 +242,7 @@ async function run() {
     domNode: generatedEditor.getDomNode()!,
     statusDomNode: document.getElementById("generated-status")!,
     hoverDecorations: [],
+    coverageDecorations: [],
     data: {
       mappings: data.map.mappings,
       offsetMappings: data.map.mappings,
@@ -245,11 +250,22 @@ async function run() {
     },
   };
 
+  if (data.coverage) {
+    updateCoverageDecorations(generated, data.coverage.coverage);
+  }
+
   let prevSourceIndex: number | undefined;
   function updateOriginal(index: number) {
     if (index !== prevSourceIndex) {
       original.data = getOriginal(data, index);
       original.model.setValue(original?.data?.value ?? "");
+      if (data.coverage) {
+        const coverage = makeOriginalCoverage(
+          data.coverage,
+          original.data!.mappings
+        );
+        updateCoverageDecorations(original, coverage);
+      }
       prevSourceIndex = index;
     }
   }

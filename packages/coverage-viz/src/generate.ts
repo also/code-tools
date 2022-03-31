@@ -1,4 +1,8 @@
-import { getIndices, mapCoverageWithMappings } from "@also/mapped-coverage/lib";
+import {
+  getIndices,
+  mapCoverageWithMappings,
+  MappedCoverage,
+} from "@also/mapped-coverage/lib";
 import { ChromeBasicCoverage } from "@also/mapped-coverage/lib/types";
 import { formatWithMap } from "@also/chrome-devtools-formatter/lib";
 import { toMappings } from "@also/chrome-devtools-formatter/lib/source-maps";
@@ -21,7 +25,7 @@ export type CodeWithCoverage = {
   };
   sourcesContent: string[];
   sourceNames: string[];
-  coverage: { start: Position; end: Position }[];
+  coverage: MappedCoverage | undefined;
 };
 
 export async function generate(
@@ -48,8 +52,8 @@ export async function generate(
 
   /** maps from formatted to minified */
   const mappedCoverage = c
-    ? [...mapCoverageWithMappings(formattedMappings, c, indices)]
-    : [];
+    ? mapCoverageWithMappings(formattedMappings, c, indices)
+    : undefined;
 
   start = Date.now();
   const remapped = applyMappings(formattedMappings, originalMappings);
