@@ -113,10 +113,10 @@ export function mapCoverageWithMappings(
 
     result.push({
       start: {
-        line: mappings[startMapping] + 1,
+        line: mappings[startMapping],
         column: mappings[startMapping + 1],
       },
-      end: { line: mappings[endMapping] + 1, column: mappings[endMapping + 1] },
+      end: { line: mappings[endMapping], column: mappings[endMapping + 1] },
     });
   }
 
@@ -149,11 +149,11 @@ export function makeOriginalCoverage(
 
       result.push({
         start: {
-          line: originalMappings[firstMapping + 3] + 1,
+          line: originalMappings[firstMapping + 3],
           column: originalMappings[firstMapping + 4],
         },
         end: {
-          line: originalMappings[lastMapping + 3] + 1,
+          line: originalMappings[lastMapping + 3],
           column: originalMappings[lastMapping + 4],
         },
       });

@@ -129,9 +129,9 @@ function updateCoverageDecorations(pane: Pane, coverage: CoverageEntry[]) {
     pane.coverageDecorations,
     coverage.map((c) => ({
       range: new monaco.Range(
-        c.start.line,
+        c.start.line + 1,
         c.start.column + 1,
-        c.end.line,
+        c.end.line + 1,
         c.end.column + 1
       ),
       options: {
