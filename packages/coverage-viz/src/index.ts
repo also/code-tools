@@ -339,7 +339,7 @@ async function run() {
       otherPaneData.offsetMappings,
       otherMapping,
       otherLine,
-      otherPane.model.getLineLength(originalLine + 1)
+      otherPane.model.getLineLength(otherLine + 1)
     );
     if (!otherRange) {
       return;
