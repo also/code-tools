@@ -58,6 +58,8 @@ export function binarySearch(
   return l * 6;
 }
 
+// TODO this should probably find the leftmost element, but that's not quite the binary search it's doing
+// https://en.wikipedia.org/wiki/Binary_search_algorithm#Approximate_matches
 export function findMapping(mappings: Int32Array, row: number, column: number) {
   let firstMappingIndex = binarySearch(mappings, row, column);
 
