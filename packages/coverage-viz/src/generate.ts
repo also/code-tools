@@ -56,7 +56,7 @@ export async function generate(
     : undefined;
 
   start = Date.now();
-  const remapped = applyMappings(formattedMappings, originalMappings);
+  const remapped = applyMappings(formattedMappings, originalMappings.mappings);
   console.log(`applyMappings: ${Date.now() - start}ms`);
 
   start = Date.now();

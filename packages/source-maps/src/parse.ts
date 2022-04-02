@@ -121,6 +121,9 @@ base64Table.fill(255);
 
 // https://github.com/mozilla/source-map/blob/c97d38b70de088d87b051f81b95c138a74032a43/lib/base64-vlq.js
 export function readMappings(s: string) {
+  const sourceLengths: number[] = [];
+  let maxSourceLength = 0;
+
   const sLen = s.length;
   let generatedLine = 0;
   let generatedColumn = 0;
@@ -237,6 +240,14 @@ export function readMappings(s: string) {
         mappings[len + 2] = source;
         mappings[len + 3] = originalLine;
         mappings[len + 4] = originalColumn;
+
+        if (source !== -1) {
+          const sourceLength = (sourceLengths[source] ?? 0) + 1;
+          sourceLengths[source] = sourceLength;
+          if (sourceLength > maxSourceLength) {
+            maxSourceLength = sourceLength;
+          }
+        }
       } else {
         mappings[len + 2] = -1;
         mappings[len + 3] = -1;
@@ -253,5 +264,9 @@ export function readMappings(s: string) {
     }
   }
 
-  return mappings.subarray(0, len);
+  return {
+    mappings: mappings.subarray(0, len),
+    sourceLengths,
+    maxSourceLength,
+  };
 }
