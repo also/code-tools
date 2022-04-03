@@ -53,7 +53,7 @@ export function toPoint(indices: number[], offset: number): Point | undefined {
       if (indices[index] > offset) {
         return {
           line: index,
-          column: offset - (indices[index - 1] || 0) + 1,
+          column: offset - (indices[index - 1] || 0),
           offset,
         };
       }
