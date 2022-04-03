@@ -28,7 +28,7 @@ export type CodeWithCoverage = {
   coverage: MappedCoverage | undefined;
 };
 
-export async function generate(
+export async function generateFormatted(
   code: string,
   map: string,
   c?: ChromeBasicCoverage
@@ -66,6 +66,40 @@ export async function generate(
   return {
     code: formatted.content,
     map: { mappings: formattedMappings, sourceMappings },
+    sourcesContent: mapJson.sourcesContent || [],
+    sourceNames: mapJson.sources || [],
+    coverage: mappedCoverage,
+  };
+}
+
+export async function generate(
+  code: string,
+  map: string,
+  c?: ChromeBasicCoverage
+): Promise<CodeWithCoverage> {
+  const mapJson = JSON.parse(map);
+  let start = Date.now();
+  const indices = getIndices(code);
+  console.log(`getIndices: ${Date.now() - start}ms`);
+
+  start = Date.now();
+  const originalMappings = readMappings(mapJson.mappings);
+  console.log(`readMappings: ${Date.now() - start}ms`);
+
+  const mappedCoverage = c
+    ? mapCoverageWithMappings(originalMappings.mappings, c, indices, false)
+    : undefined;
+
+  start = Date.now();
+  const sourceMappings = makeOriginalMappings(originalMappings);
+  console.log(`makeOriginalMappings: ${Date.now() - start}ms`);
+
+  return {
+    code,
+    map: {
+      mappings: originalMappings.mappings,
+      sourceMappings,
+    },
     sourcesContent: mapJson.sourcesContent || [],
     sourceNames: mapJson.sources || [],
     coverage: mappedCoverage,

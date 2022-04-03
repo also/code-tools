@@ -67,21 +67,32 @@ export interface CoverageEntry {
   end: Position;
 }
 
+export interface MappedPosition extends Position {
+  mapping: number;
+}
+
+export interface MappedCoverageEntry extends CoverageEntry {
+  start: MappedPosition;
+  end: MappedPosition;
+}
+
 export interface MappedCoverage {
-  coverage: CoverageEntry[];
+  coverage: MappedCoverageEntry[];
   mappingRangeIndices: Int32Array;
 }
 
 export function mapCoverageWithMappings(
   mappings: Int32Array,
   coverage: ChromeBasicCoverage,
-  indices: number[]
+  indices: number[],
+  searchOriginal = true
 ): MappedCoverage {
   const mappingRangeIndices = new Int32Array(mappings.length / 6).fill(-1);
-  const generatedMappings = mappings.subarray(3);
+  const searchMappings = searchOriginal ? mappings.subarray(3) : mappings;
   const result = [];
   let i = 0;
   for (const r of coverage.ranges) {
+    // FIXME this shouldn't be incremented until after it's used, but we don't care about the value at the moment, only if it's set
     i++;
     const start = toPoint(indices, r.start);
     const end = toPoint(indices, r.end);
@@ -90,19 +101,19 @@ export function mapCoverageWithMappings(
     }
 
     const startMapping = findMapping(
-      generatedMappings,
+      searchMappings,
       start.line - 1,
       start.column
     );
-    const endMapping = findMapping(generatedMappings, end.line - 1, end.column);
+    const endMapping = findMapping(searchMappings, end.line - 1, end.column);
 
-    if (mappings[startMapping + 3] !== start.line - 1) {
+    if (searchMappings[startMapping] !== start.line - 1) {
       throw new Error("missing start mapping");
     }
 
-    if (mappings[endMapping + 3] !== end.line - 1) {
-      // FIXME not working for last entry?
-      // throw new Error("missing end mapping");
+    if (endMapping >= mappings.length) {
+      // FIXME working around the binary search not working for the last entry?
+      continue;
     }
 
     const max = endMapping / 6;
@@ -115,8 +126,13 @@ export function mapCoverageWithMappings(
       start: {
         line: mappings[startMapping],
         column: mappings[startMapping + 1],
+        mapping: startMapping,
       },
-      end: { line: mappings[endMapping], column: mappings[endMapping + 1] },
+      end: {
+        line: mappings[endMapping],
+        column: mappings[endMapping + 1],
+        mapping: endMapping,
+      },
     });
   }
 
