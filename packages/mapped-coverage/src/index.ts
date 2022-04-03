@@ -39,14 +39,20 @@ export function getIndices(source: string) {
   return indices;
 }
 
-export function toPoint(indices: number[], offset: number) {
+export interface Point {
+  line: number;
+  column: number;
+  offset: number;
+}
+
+export function toPoint(indices: number[], offset: number): Point | undefined {
   let index = -1;
 
   if (offset > -1 && offset < indices[indices.length - 1]) {
     while (++index < indices.length) {
       if (indices[index] > offset) {
         return {
-          line: index + 1,
+          line: index,
           column: offset - (indices[index - 1] || 0) + 1,
           offset,
         };
@@ -100,14 +106,10 @@ export function mapCoverageWithMappings(
       throw new Error(`Invalid range ${JSON.stringify(r)}`);
     }
 
-    const startMapping = findMapping(
-      searchMappings,
-      start.line - 1,
-      start.column
-    );
-    const endMapping = findMapping(searchMappings, end.line - 1, end.column);
+    const startMapping = findMapping(searchMappings, start.line, start.column);
+    const endMapping = findMapping(searchMappings, end.line, end.column);
 
-    if (searchMappings[startMapping] !== start.line - 1) {
+    if (searchMappings[startMapping] !== start.line) {
       throw new Error("missing start mapping");
     }
 
