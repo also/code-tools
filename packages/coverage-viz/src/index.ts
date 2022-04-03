@@ -5,7 +5,6 @@ import { findMapping, rangeOfMapping } from "@also/source-maps/lib/search";
 import monacoTypes from "monaco-editor";
 import { RangeRect, render, sizeCanvas } from "./overlay.js";
 import { CoverageEntry, makeOriginalCoverage } from "@also/mapped-coverage/lib";
-// @ts-expect-error
 const monaco: typeof monacoTypes = require("monaco-editor/esm/vs/editor/editor.main.js");
 
 interface PaneData {
