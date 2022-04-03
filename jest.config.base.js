@@ -5,6 +5,7 @@ module.exports = () =>
   ({
     preset: "ts-jest",
     roots: ["<rootDir>/src"],
+    injectGlobals: false,
     globals: {
       "ts-jest": {
         isolatedModules: true,
