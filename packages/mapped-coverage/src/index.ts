@@ -1,4 +1,4 @@
-import { findMapping } from "@also/source-maps/lib/search";
+import { findNearestMapping } from "@also/source-maps/lib/search";
 import { ChromeBasicCoverage, V8Coverage } from "./types.js";
 
 // https://github.com/vfile/vfile-location/blob/a2322512ec2c5949bfbc9566f7aab43720cf22ce/index.js
@@ -74,7 +74,7 @@ export interface CoverageEntry {
 }
 
 export interface MappedPosition extends Position {
-  mapping: number;
+  mapping?: number;
 }
 
 export interface MappedCoverageEntry extends CoverageEntry {
@@ -91,51 +91,67 @@ export function mapCoverageWithMappings(
   mappings: Int32Array,
   coverage: ChromeBasicCoverage,
   indices: number[],
-  searchOriginal = true
+  coversOriginal = true
 ): MappedCoverage {
   const mappingRangeIndices = new Int32Array(mappings.length / 6).fill(-1);
-  const searchMappings = searchOriginal ? mappings.subarray(3) : mappings;
-  const result = [];
+  const searchMappings = coversOriginal ? mappings.subarray(3) : mappings;
+  const result: MappedCoverageEntry[] = [];
   let i = 0;
+
   for (const r of coverage.ranges) {
-    // FIXME this shouldn't be incremented until after it's used, but we don't care about the value at the moment, only if it's set
-    i++;
     const start = toPoint(indices, r.start);
     const end = toPoint(indices, r.end);
     if (!(start && end)) {
       throw new Error(`Invalid range ${JSON.stringify(r)}`);
     }
 
-    const startMapping = findMapping(searchMappings, start.line, start.column);
-    const endMapping = findMapping(searchMappings, end.line, end.column);
+    let startMapping = findNearestMapping(
+      searchMappings,
+      start.line,
+      start.column
+    );
+    // TODO add some range functions to source-maps
+    // if the coverage begins before the first mapping, that's fine
+    if (startMapping < 0) {
+      startMapping = 0;
+    }
+    const endMapping = findNearestMapping(searchMappings, end.line, end.column);
+    const mapped =
+      searchMappings[startMapping] === start.line &&
+      // FIXME why?
+      endMapping < mappings.length;
 
-    if (searchMappings[startMapping] !== start.line) {
-      throw new Error("missing start mapping");
+    if (coversOriginal) {
+      if (!mapped) {
+        throw new Error("couldn't find mapping");
+      }
+      result.push({
+        start: {
+          line: mappings[startMapping],
+          column: mappings[startMapping + 1],
+          mapping: startMapping,
+        },
+        end: {
+          line: mappings[endMapping],
+          column: mappings[endMapping + 1],
+          mapping: endMapping,
+        },
+      });
+    } else {
+      result.push({
+        start,
+        end,
+      });
+    }
+    if (mapped) {
+      const max = endMapping / 6;
+
+      for (let j = startMapping / 6; j <= max; j += 1) {
+        mappingRangeIndices[j] = i;
+      }
     }
 
-    if (endMapping >= mappings.length) {
-      // FIXME working around the binary search not working for the last entry?
-      continue;
-    }
-
-    const max = endMapping / 6;
-
-    for (let j = startMapping / 6; j <= max; j += 1) {
-      mappingRangeIndices[j] = i;
-    }
-
-    result.push({
-      start: {
-        line: mappings[startMapping],
-        column: mappings[startMapping + 1],
-        mapping: startMapping,
-      },
-      end: {
-        line: mappings[endMapping],
-        column: mappings[endMapping + 1],
-        mapping: endMapping,
-      },
-    });
+    i++;
   }
 
   return { coverage: result, mappingRangeIndices };

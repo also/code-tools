@@ -1,4 +1,4 @@
-import { findMapping } from "./search.js";
+import { findNearestMapping } from "./search.js";
 
 /** use intermediate mappings to update original line, column, source, and name in final mappings */
 export function applyMappings(
@@ -9,7 +9,7 @@ export function applyMappings(
   let maxSourceLength = 0;
 
   for (let i = 0; i < finalMappings.length; i += 6) {
-    const newMapping = findMapping(
+    const newMapping = findNearestMapping(
       intermediateMappings,
       finalMappings[i + 3],
       finalMappings[i + 4]

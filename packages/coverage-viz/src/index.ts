@@ -1,7 +1,7 @@
 import "./monaco-environment.js";
 import { getData } from "./coverage-example-data.js";
 import { CodeWithCoverage, generate } from "./generate.js";
-import { findMapping, rangeOfMapping } from "@also/source-maps/lib/search";
+import { findMappingRange } from "@also/source-maps/lib/search";
 import monacoTypes from "monaco-editor";
 import { RangeRect, render, sizeCanvas } from "./overlay.js";
 import { CoverageEntry, makeOriginalCoverage } from "@also/mapped-coverage/lib";
@@ -69,15 +69,14 @@ function getHovered(
 ): Hovered {
   const row = position.lineNumber - 1;
   const index = position.column - 1;
-  const mapping = findMapping(mappings, row, index);
-  const range = rangeOfMapping(
+  const range = findMappingRange(
     mappings,
-    mapping,
     row,
+    index,
     model.getLineLength(position.lineNumber)
   );
 
-  if (!(range && index >= range.startColumn && index < range.endColumn)) {
+  if (!range) {
     return {
       line: row,
       column: index,
@@ -87,7 +86,7 @@ function getHovered(
   return {
     line: row,
     column: index,
-    mapping,
+    mapping: range.mapping,
     range,
   };
 }
@@ -259,11 +258,15 @@ async function run() {
       original.data = getOriginal(data, index);
       original.model.setValue(original?.data?.value ?? "");
       if (data.coverage) {
-        const coverage = makeOriginalCoverage(
-          data.coverage,
-          original.data!.mappings
-        );
-        updateCoverageDecorations(original, coverage);
+        if (original.data) {
+          const coverage = makeOriginalCoverage(
+            data.coverage,
+            original.data!.mappings
+          );
+          updateCoverageDecorations(original, coverage);
+        } else {
+          updateCoverageDecorations(original, []);
+        }
       }
       prevSourceIndex = index;
     }
@@ -329,17 +332,13 @@ async function run() {
       originalColumn + 1
     } (${data.sourceNames[originalSource]})`;
 
-    const otherMapping = findMapping(
+    const otherRange = findMappingRange(
       otherPaneData.offsetMappings,
       otherLine,
-      otherColumn
-    );
-    const otherRange = rangeOfMapping(
-      otherPaneData.offsetMappings,
-      otherMapping,
-      otherLine,
+      otherColumn,
       otherPane.model.getLineLength(otherLine + 1)
     );
+
     if (!otherRange) {
       return;
     }
