@@ -189,7 +189,7 @@ async function run() {
   });
 
   const fileLines = new Map<number, number[]>();
-  let previousSource = -1;
+  let previousSource = -2;
   for (let i = 0; i < data.map.mappings.length; i += 6) {
     const source = data.map.mappings[i + 2];
     if (source !== previousSource) {
