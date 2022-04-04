@@ -188,35 +188,46 @@ async function run() {
     sizeCanvas(canvas, c);
   });
 
-  const fileLines = new Map<number, number[]>();
+  const fileLines = new Map<
+    string,
+    { line: number; column: number; sources: number[] }
+  >();
   let previousSource = -2;
   for (let i = 0; i < data.map.mappings.length; i += 6) {
-    const source = data.map.mappings[i + 2];
-    if (source !== previousSource) {
+    const sourceIndex = data.map.mappings[i + 2];
+    if (sourceIndex !== previousSource) {
       const line = data.map.mappings[i];
-      let files = fileLines.get(line);
-      if (!files) {
-        files = [];
-        fileLines.set(line, files);
+      // TODO I can only figure out how to display this on the wrapped line after the change, rather than before (implied by the afterLineNumber etc in the view zone api)
+      // const column = data.map.mappings[i + 1];
+      const column = 0;
+      const key = `${line}-${column}`;
+      let entry = fileLines.get(key);
+      if (!entry) {
+        entry = { sources: [], line, column };
+        fileLines.set(key, entry);
       }
-      if (source !== -1) {
-        files.push(source);
+      if (sourceIndex !== -1) {
+        entry.sources.push(sourceIndex);
       }
     }
-    previousSource = source;
+    previousSource = sourceIndex;
   }
 
   generatedEditor.changeViewZones(function (changeAccessor) {
-    for (const [line, sources] of fileLines) {
+    for (const { sources, line, column } of fileLines.values()) {
       const domNode = document.createElement("div");
       const mappedSources = sources.filter((source) => source !== -1);
       domNode.textContent =
         mappedSources.length > 0
-          ? mappedSources.map((n) => data.sourceNames[n]).join(", ")
+          ? mappedSources.length > 3
+            ? "(several sources)"
+            : mappedSources.map((n) => data.sourceNames[n]).join(", ")
           : "(unmapped)";
+
       domNode.className = "filename-line";
       changeAccessor.addZone({
         afterLineNumber: line,
+        afterColumn: column,
         heightInLines: 1,
         domNode: domNode,
       });
