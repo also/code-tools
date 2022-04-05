@@ -105,6 +105,9 @@ const options: monacoTypes.editor.IStandaloneEditorConstructionOptions = {
   unicodeHighlight: {
     ambiguousCharacters: false,
   },
+  // the setting doesn't currently do anything but cause a warning to be displayed on hover
+  // https://github.com/microsoft/monaco-editor/issues/3025
+  maxTokenizationLineLength: Number.MAX_VALUE,
 };
 
 function getOriginal(
