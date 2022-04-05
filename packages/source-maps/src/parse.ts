@@ -1,3 +1,21 @@
+export function makeOriginalMappingsUnanlyzed(mappings: Int32Array) {
+  const sourceLengths: number[] = [];
+  let maxSourceLength = 0;
+
+  for (let i = 2; i < mappings.length; i += 6) {
+    const source = mappings[i];
+    if (source !== -1) {
+      const sourceLength = (sourceLengths[source] ?? 0) + 1;
+      sourceLengths[source] = sourceLength;
+      if (sourceLength > maxSourceLength) {
+        maxSourceLength = sourceLength;
+      }
+    }
+  }
+
+  return makeOriginalMappings({ mappings, sourceLengths, maxSourceLength });
+}
+
 export function makeOriginalMappings({
   mappings,
   sourceLengths,

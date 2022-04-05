@@ -9,6 +9,7 @@ import { toMappings } from "@also/chrome-devtools-formatter/lib/source-maps";
 import { applyMappings } from "@also/source-maps/lib/transform";
 import {
   makeOriginalMappings,
+  makeOriginalMappingsUnanlyzed,
   readMappings,
 } from "@also/source-maps/lib/parse";
 
@@ -103,5 +104,31 @@ export async function generate(
     sourcesContent: mapJson.sourcesContent || [],
     sourceNames: mapJson.sources || [],
     coverage: mappedCoverage,
+  };
+}
+
+export async function formatOnly(code: string): Promise<CodeWithCoverage> {
+  let start = Date.now();
+  const indices = getIndices(code);
+  console.log(`getIndices: ${Date.now() - start}ms`);
+
+  start = Date.now();
+  const formatted = await formatWithMap(code, "  ");
+  console.log(`formatWithMap: ${Date.now() - start}ms`);
+
+  start = Date.now();
+  const formattedMappings = await toMappings(formatted.mapping, 0);
+  console.log(`toMappings: ${Date.now() - start}ms`);
+
+  start = Date.now();
+  const sourceMappings = makeOriginalMappingsUnanlyzed(formattedMappings);
+  console.log(`makeOriginalMappings: ${Date.now() - start}ms`);
+
+  return {
+    code: formatted.content,
+    map: { mappings: formattedMappings, sourceMappings },
+    sourcesContent: [code],
+    sourceNames: ["unformatted.js"],
+    coverage: undefined,
   };
 }
