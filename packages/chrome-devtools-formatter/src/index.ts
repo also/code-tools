@@ -24,8 +24,8 @@ export async function formatWithMap(source: string, indent: string) {
 
 export class Mapper {
   constructor(
-    private originalLineEndings: number[],
-    private formattedLineEndings: number[],
+    public originalLineEndings: number[],
+    public formattedLineEndings: number[],
     public mapping: FormatterActions.FormatMapping
   ) {}
 
