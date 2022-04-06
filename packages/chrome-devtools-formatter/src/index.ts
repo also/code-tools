@@ -46,9 +46,62 @@ export class Mapper {
         this.mapping.original[i]
       );
       yield {
-        generated: { line: generated[0], column: generated[1] },
-        original: { line: original[0], column: original[1] },
+        generated: {
+          line: generated[0],
+          column: generated[1],
+          offset: this.mapping.formatted[i],
+        },
+        original: {
+          line: original[0],
+          column: original[1],
+          offset: this.mapping.original[i],
+        },
       };
     }
+  }
+
+  *iterateRanges() {
+    const iterator = this.iterateMappings();
+    const previous = iterator.next();
+    if (previous.done) {
+      return;
+    }
+    for (const next of iterator) {
+      yield {
+        generated: {
+          start: previous.value.generated,
+          end: next.generated,
+        },
+        original: {
+          start: previous.value.original,
+          end: next.original,
+        },
+      };
+      previous.value = next;
+    }
+
+    const formattedLine = this.formattedLineEndings.length - 1;
+    const originalLine = this.originalLineEndings.length - 1;
+
+    yield {
+      generated: {
+        start: previous.value.generated,
+        end: {
+          line: formattedLine,
+          column:
+            this.formattedLineEndings[formattedLine] -
+            (this.formattedLineEndings[formattedLine - 1] ?? 0),
+        },
+      },
+      original: {
+        start: previous.value.original,
+        end: {
+          line: originalLine,
+          column:
+            this.originalLineEndings[originalLine] -
+            (this.originalLineEndings[originalLine - 1] ?? 0),
+        },
+      },
+    };
   }
 }
