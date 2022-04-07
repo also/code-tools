@@ -120,9 +120,8 @@ export async function formatOnly(code: string): Promise<CodeWithCoverage> {
   const formattedMappings = await toMappings(formatted.mapping, 0);
   console.log(`toMappings: ${Date.now() - start}ms`);
 
-  start = Date.now();
-  const sourceMappings = makeOriginalMappingsUnanlyzed(formattedMappings);
-  console.log(`makeOriginalMappings: ${Date.now() - start}ms`);
+  // don't need to generate inverse mappings when formatting only, since there's only one source and they're already ordered
+  const sourceMappings = [formattedMappings];
 
   return {
     code: formatted.content,
