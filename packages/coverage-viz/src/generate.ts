@@ -109,10 +109,6 @@ export async function generate(
 
 export async function formatOnly(code: string): Promise<CodeWithCoverage> {
   let start = Date.now();
-  const indices = getIndices(code);
-  console.log(`getIndices: ${Date.now() - start}ms`);
-
-  start = Date.now();
   const formatted = await formatWithMap(code, "  ");
   console.log(`formatWithMap: ${Date.now() - start}ms`);
 
