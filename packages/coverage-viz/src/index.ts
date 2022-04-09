@@ -1,6 +1,11 @@
 import "./monaco-environment.js";
 import { getData } from "./coverage-example-data.js";
-import { CodeWithCoverage, generate } from "./generate.js";
+import {
+  CodeWithCoverage,
+  formatOnly,
+  generate,
+  generateFormatted,
+} from "./generate.js";
 import { findMappingRange } from "@also/source-maps/lib/search";
 import monacoTypes from "monaco-editor";
 import { RangeRect, render, sizeCanvas } from "./overlay.js";
@@ -18,6 +23,7 @@ interface Pane {
   editor: monacoTypes.editor.IStandaloneCodeEditor;
   model: monacoTypes.editor.ITextModel;
   domNode: HTMLElement;
+  titleDomNode: HTMLElement;
   statusDomNode: HTMLElement;
   hoverDecorations: string[];
   coverageDecorations: string[];
@@ -157,7 +163,9 @@ function updateCoverageDecorations(pane: Pane, coverage: CoverageEntry[]) {
 async function run() {
   const inputData = await getData();
   const start = Date.now();
-  const data = await generate(
+  // const data = await formatOnly(`const x = 0; const y = 1; const z = 2;`);
+
+  const data = await generateFormatted(
     inputData.code,
     inputData.map,
     inputData.coverage
@@ -242,6 +250,7 @@ async function run() {
     editor: originalEditor,
     model: originalEditor.getModel()!,
     domNode: originalEditor.getDomNode()!,
+    titleDomNode: document.getElementById("original-title")!,
     statusDomNode: document.getElementById("original-status")!,
     hoverDecorations: [],
     coverageDecorations: [],
@@ -252,6 +261,7 @@ async function run() {
     editor: generatedEditor,
     model: generatedEditor.getModel()!,
     domNode: generatedEditor.getDomNode()!,
+    titleDomNode: document.getElementById("generated-title")!,
     statusDomNode: document.getElementById("generated-status")!,
     hoverDecorations: [],
     coverageDecorations: [],
@@ -282,6 +292,8 @@ async function run() {
           updateCoverageDecorations(original, []);
         }
       }
+
+      original.titleDomNode.innerText = data.sourceNames[index] ?? "";
       prevSourceIndex = index;
     }
   }
@@ -294,16 +306,16 @@ async function run() {
     original.editor.deltaDecorations(original.hoverDecorations, []);
     generated.editor.deltaDecorations(generated.hoverDecorations, []);
 
+    const paneData = pane.data;
+
+    if (!paneData) {
+      return;
+    }
+
     const target = pane.editor.getTargetAtClientPoint(e.clientX, e.clientY);
     // over text
     // https://github.com/microsoft/monaco-editor/blob/ca2692a/website/typedoc/monaco.d.ts#L4731
     if (target?.type !== 6) {
-      return;
-    }
-
-    const paneData = pane.data;
-
-    if (!paneData) {
       return;
     }
 
@@ -342,9 +354,9 @@ async function run() {
       return;
     }
 
-    original.statusDomNode.innerText = `Ln ${originalLine + 1} Col ${
-      originalColumn + 1
-    } (${data.sourceNames[originalSource]})`;
+    otherPane.statusDomNode.innerText = `Ln ${otherLine + 1} Col ${
+      otherColumn + 1
+    }`;
 
     const otherRange = findMappingRange(
       otherPaneData.offsetMappings,
