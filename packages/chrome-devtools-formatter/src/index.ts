@@ -14,6 +14,8 @@ export async function formatWithMap(source: string, indent: string) {
   const fsm = formatted.formattedMapping;
 
   const mapping = new Mapper(
+    source,
+    formatted.formattedContent,
     fsm.originalLineEndings,
     fsm.formattedLineEndings,
     fsm.mapping
@@ -24,6 +26,8 @@ export async function formatWithMap(source: string, indent: string) {
 
 export class Mapper {
   constructor(
+    public original: string,
+    public formatted: string,
     public originalLineEndings: number[],
     public formattedLineEndings: number[],
     public mapping: FormatterActions.FormatMapping
@@ -91,6 +95,7 @@ export class Mapper {
           column:
             this.formattedLineEndings[formattedLine] -
             (this.formattedLineEndings[formattedLine - 1] ?? 0),
+          offset: this.formatted.length,
         },
       },
       original: {
@@ -100,6 +105,7 @@ export class Mapper {
           column:
             this.originalLineEndings[originalLine] -
             (this.originalLineEndings[originalLine - 1] ?? 0),
+          offset: this.original.length,
         },
       },
     };

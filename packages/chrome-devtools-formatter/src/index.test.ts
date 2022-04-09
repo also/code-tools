@@ -56,6 +56,7 @@ Object {
 Object {
   "content": "",
   "mapping": Mapper {
+    "formatted": "",
     "formattedLineEndings": Array [
       0,
     ],
@@ -67,6 +68,7 @@ Object {
         0,
       ],
     },
+    "original": "",
     "originalLineEndings": Array [
       0,
     ],
@@ -113,6 +115,7 @@ Array [
       "end": Object {
         "column": 1,
         "line": 3,
+        "offset": 39,
       },
       "start": Object {
         "column": 0,
@@ -124,6 +127,7 @@ Array [
       "end": Object {
         "column": 38,
         "line": 0,
+        "offset": 38,
       },
       "start": Object {
         "column": 0,
