@@ -155,7 +155,29 @@ function updateCoverageDecorations(pane: Pane, coverage: CoverageEntry[]) {
   );
 }
 
+const html = `
+<div id="textareas">
+  <div id="left">
+    <div class="pane-header">
+      Original <span id="original-title"></span>
+    </div>
+    <div id="original"></div>
+    <div class="pane-footer"><span id="original-status">&nbsp;</span></div>
+  </div>
+  <div id="right">
+    <div class="pane-header">
+      Generated <span id="generated-title"></span>
+    </div>
+    <div id="generated"></div>
+    <div class="pane-footer"><span id="generated-status">&nbsp;</span></div>
+  </div>
+</div>
+<canvas id="canvas"/>
+`;
+
 export async function showEditor(data: CodeWithCoverage) {
+  document.body.innerHTML += html;
+
   const canvas = document.getElementById("canvas")! as HTMLCanvasElement;
   const c = canvas.getContext("2d")!;
 
