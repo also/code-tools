@@ -21,10 +21,11 @@ const opts = {
   logLevel: "info",
   plugins: [fixCodemirrorResolve],
   entryPoints: [
-    "src/index.ts",
+    "src/examples/coverage-with-map.ts",
     "src/examples/format.ts",
     "src/examples/html-coverage.ts",
   ],
+  outbase: "src",
   outdir: "dist",
   bundle: true,
   sourcemap: true,
