@@ -6,7 +6,7 @@ const coverage: ChromeBasicCoverage = require("./html-coverage.json")[0];
 
 async function run() {
   const start = Date.now();
-  const data = await coverageOnly(coverage.text!, coverage);
+  const data = await coverageOnly("text/html", coverage.text!, coverage);
   const end = Date.now();
   console.log(`Generated in ${end - start}ms`);
 

@@ -111,6 +111,7 @@ export async function generate(
 }
 
 export async function coverageOnly(
+  mimeType: string,
   code: string,
   c?: ChromeBasicCoverage
 ): Promise<CodeWithCoverage> {
@@ -119,7 +120,7 @@ export async function coverageOnly(
   console.log(`getIndices: ${Date.now() - start}ms`);
 
   start = Date.now();
-  const formatted = await formatWithMap("text/html", code, "  ");
+  const formatted = await formatWithMap(mimeType, code, "  ");
   console.log(`formatWithMap: ${Date.now() - start}ms`);
 
   start = Date.now();
@@ -152,6 +153,14 @@ const types: Record<string, { extension: string; language: string }> = {
   "text/css": { extension: "css", language: "css" },
   "text/javascript": { extension: "js", language: "javascript" },
 };
+
+export function getMimeType(filename: string) {
+  for (const [mimeType, { extension }] of Object.entries(types)) {
+    if (filename.endsWith(`.${extension}`)) {
+      return mimeType;
+    }
+  }
+}
 
 export async function formatOnly(
   mimeType: string,

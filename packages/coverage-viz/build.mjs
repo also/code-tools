@@ -11,7 +11,7 @@ const codemirrorShimModule = require.resolve(
 let fixCodemirrorResolve = {
   name: "fix-codemirror-resolve",
   setup(build) {
-    build.onResolve({ filter: /^\.\.\/\.\.\/lib\/codemirror$/ }, (args) => {
+    build.onResolve({ filter: /^\.\.\/\.\.\/lib\/codemirror$/ }, () => {
       return { path: codemirrorShimModule };
     });
   },
@@ -21,6 +21,7 @@ const opts = {
   logLevel: "info",
   plugins: [fixCodemirrorResolve],
   entryPoints: [
+    "src/app.ts",
     "src/examples/coverage-with-map.ts",
     "src/examples/format.ts",
     "src/examples/html-coverage.ts",
