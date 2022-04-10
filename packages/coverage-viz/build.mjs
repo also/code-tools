@@ -14,7 +14,7 @@ const opts = {
 
 const mode = process.argv[2] || "build";
 
-if (mode === build) {
+if (mode === "build") {
   build(opts);
 } else if (mode === "watch") {
   build({ ...opts, watch: true });
