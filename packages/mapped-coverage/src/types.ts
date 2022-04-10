@@ -18,4 +18,5 @@ export type ChromeBasicCoverage = {
     start: number;
     end: number;
   }[];
+  text?: string;
 };
