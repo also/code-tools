@@ -2,7 +2,7 @@ import { serve, build } from "esbuild";
 
 const opts = {
   logLevel: "info",
-  entryPoints: ["src/index.ts"],
+  entryPoints: ["src/index.ts", "src/format-example.ts"],
   outdir: "dist",
   bundle: true,
   sourcemap: true,
