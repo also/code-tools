@@ -1,9 +1,8 @@
 import { ChromeBasicCoverage } from "@also/mapped-coverage/lib/types";
-import { coverageOnly } from "./generate.js";
-import { showEditor } from "./mapped-editor.js";
+import { coverageOnly } from "../generate.js";
+import { showEditor } from "../mapped-editor.js";
 
-const coverage: ChromeBasicCoverage =
-  require("../example/html-coverage-example.json")[0];
+const coverage: ChromeBasicCoverage = require("./html-coverage.json")[0];
 
 async function run() {
   const start = Date.now();

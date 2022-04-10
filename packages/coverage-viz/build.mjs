@@ -22,8 +22,8 @@ const opts = {
   plugins: [fixCodemirrorResolve],
   entryPoints: [
     "src/index.ts",
-    "src/format-example.ts",
-    "src/html-coverage-example.ts",
+    "src/examples/format.ts",
+    "src/examples/html-coverage.ts",
   ],
   outdir: "dist",
   bundle: true,
