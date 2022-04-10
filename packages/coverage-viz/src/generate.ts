@@ -107,10 +107,17 @@ export async function generate(
   };
 }
 
+const extensions: Record<string, string> = {
+  "text/html": "html",
+  "text/css": "css",
+  "text/javascript": "js",
+};
+
 export async function formatOnly(
   mimeType: string,
   code: string
 ): Promise<CodeWithCoverage> {
+  const filename = `unformatted.${extensions[mimeType] ?? ".txt"}`;
   let start = Date.now();
   const formatted = await formatWithMap(mimeType, code, "  ");
   console.log(`formatWithMap: ${Date.now() - start}ms`);
@@ -126,7 +133,7 @@ export async function formatOnly(
     code: formatted.content,
     map: { mappings: formattedMappings, sourceMappings },
     sourcesContent: [code],
-    sourceNames: ["unformatted.js"],
+    sourceNames: [filename],
     coverage: undefined,
   };
 }
