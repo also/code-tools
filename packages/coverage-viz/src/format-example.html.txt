@@ -1,0 +1,1 @@
+<html><script>const x=1;const  y=2;</script><style>h1{color: red;}</style></html>

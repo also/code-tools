@@ -5,7 +5,7 @@ async function run() {
   const start = Date.now();
   const data = await formatOnly(
     "text/html",
-    `<!DOCTYPE html><html> <head> <link rel="stylesheet" href="../dist/format-example.css"/> </head> <body> <header>Format Example</header> <script src="../dist/format-example.js" type="module"></script> </body></html>`
+    require("./format-example.html.txt")
   );
   const end = Date.now();
   console.log(`Generated in ${end - start}ms`);
