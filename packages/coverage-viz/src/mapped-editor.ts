@@ -1,4 +1,5 @@
 import "./monaco-environment.js";
+import "./app.css";
 import { findMappingRange } from "@also/source-maps/lib/search";
 import monacoTypes from "monaco-editor";
 import { RangeRect, render, sizeCanvas } from "./overlay.js";
