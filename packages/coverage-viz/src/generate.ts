@@ -142,7 +142,7 @@ export async function coverageOnly(
     language: "html",
     map: { mappings: formattedMappings, sourceMappings },
     sourcesContent: [code],
-    sourceNames: ["FIXME"],
+    sourceNames: [c?.url ?? "FIXME"],
     coverage: mappedCoverage,
   };
 }
