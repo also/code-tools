@@ -5,21 +5,26 @@ const { formatWithMap } =
 
 describe("formatWithMap", () => {
   test("removes extra spaces", async () => {
-    expect((await formatWithMap(" const  x  =  1 ", "  ")).content).toBe(
-      `const x = 1\n`
-    );
+    expect(
+      (await formatWithMap("text/javascript", " const  x  =  1 ", "  ")).content
+    ).toBe(`const x = 1\n`);
   });
 
   test("adds spaces", async () => {
-    expect((await formatWithMap("const x=1", "  ")).content).toBe(
-      `const x = 1\n`
-    );
+    expect(
+      (await formatWithMap("text/javascript", "const x=1", "  ")).content
+    ).toBe(`const x = 1\n`);
   });
 
   test("doesn't generate mappings for unchanged input", async () => {
     expect(
-      (await formatWithMap("const x = 1;\nconst y = 2;\nconst z = 3;\n", "  "))
-        .mapping.mapping
+      (
+        await formatWithMap(
+          "text/javascript",
+          "const x = 1;\nconst y = 2;\nconst z = 3;\n",
+          "  "
+        )
+      ).mapping.mapping
     ).toMatchInlineSnapshot(`
 Object {
   "formatted": Array [
@@ -36,6 +41,7 @@ Object {
     expect(
       (
         await formatWithMap(
+          "text/javascript",
           "const x\t=\n1; const\ny =\t2;\nconst z = 3;\n",
           "  "
         )
@@ -53,7 +59,8 @@ Object {
   });
 
   test("generates a single mapping for empty string", async () => {
-    expect(await formatWithMap("", "  ")).toMatchInlineSnapshot(`
+    expect(await formatWithMap("text/javascript", "", "  "))
+      .toMatchInlineSnapshot(`
 Object {
   "content": "",
   "mapping": Mapper {
@@ -80,8 +87,8 @@ Object {
 
   test("computes line endings", async () => {
     expect(
-      (await formatWithMap("// a\n// b\n// c\n", "  ")).mapping
-        .originalLineEndings
+      (await formatWithMap("text/javascript", "// a\n// b\n// c\n", "  "))
+        .mapping.originalLineEndings
     ).toMatchInlineSnapshot(`
 Array [
   4,
@@ -92,7 +99,7 @@ Array [
 `);
 
     expect(
-      (await formatWithMap("// a\n// b\n// c", "  ")).mapping
+      (await formatWithMap("text/javascript", "// a\n// b\n// c", "  ")).mapping
         .originalLineEndings
     ).toMatchInlineSnapshot(`
 Array [
@@ -105,6 +112,7 @@ Array [
 
   test("computes ranges", async () => {
     const { mapping, content } = await formatWithMap(
+      "text/javascript",
       "const a = 1; const b = 2; const c = 3;",
       "  "
     );

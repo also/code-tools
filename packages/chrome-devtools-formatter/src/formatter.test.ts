@@ -1,7 +1,3 @@
-/**
- * @jest-environment jsdom
- */
-
 import { describe, expect, test, jest } from "@jest/globals";
 
 jest.mock("codemirror/lib/codemirror", () => {
@@ -64,8 +60,8 @@ Object {
   });
 
   test("formats html", () => {
-    expect(format("text/html", "<div><h1>test</h1></div>")).
-toMatchInlineSnapshot(`
+    expect(format("text/html", "<div><h1>test</h1></div>"))
+      .toMatchInlineSnapshot(`
 Object {
   "content": "<div>
     <h1>test</h1>

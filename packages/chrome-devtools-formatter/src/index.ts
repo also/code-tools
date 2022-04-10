@@ -4,12 +4,15 @@ import {
   positionToLocation,
 } from "./vendor/models/formatter/ScriptFormatter.js";
 
-export async function formatWithMap(source: string, indent: string) {
-  const formatted = await formatScriptContent(
-    "text/javascript",
-    source,
-    indent
-  );
+// TODO is there any point in keeping the separate module around?
+import "./formatter.js";
+
+export async function formatWithMap(
+  mimeType: string,
+  source: string,
+  indent: string
+) {
+  const formatted = await formatScriptContent(mimeType, source, indent);
 
   const fsm = formatted.formattedMapping;
 

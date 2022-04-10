@@ -6,6 +6,7 @@ module.exports = () =>
     preset: "ts-jest",
     roots: ["<rootDir>/src"],
     injectGlobals: false,
+    testEnvironment: "jsdom",
     globals: {
       "ts-jest": {
         isolatedModules: true,

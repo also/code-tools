@@ -32,7 +32,7 @@ import * as Platform from '../../core/platform/platform.js';
 // import * as Root from '../../core/root/root.js';
 import * as Acorn from '../../third_party/acorn/acorn.js';
 
-import CodeMirror from '../../../codemirror';
+const CodeMirror = require( '../../../codemirror');
 
 import {AcornTokenizer, ECMA_VERSION} from './AcornTokenizer.js';
 import {CSSFormatter} from './CSSFormatter.js';

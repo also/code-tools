@@ -1,7 +1,25 @@
 import { serve, build } from "esbuild";
 
+import { createRequire } from "module";
+
+const require = createRequire(import.meta.url);
+
+const codemirrorShimModule = require.resolve(
+  "@also/chrome-devtools-formatter/lib/codemirror.js"
+);
+
+let fixCodemirrorResolve = {
+  name: "fix-codemirror-resolve",
+  setup(build) {
+    build.onResolve({ filter: /^\.\.\/\.\.\/lib\/codemirror$/ }, (args) => {
+      return { path: codemirrorShimModule };
+    });
+  },
+};
+
 const opts = {
   logLevel: "info",
+  plugins: [fixCodemirrorResolve],
   entryPoints: ["src/index.ts", "src/format-example.ts"],
   outdir: "dist",
   bundle: true,

@@ -7,4 +7,4 @@ const CodeMirror = (
       window.CodeMirror)
 ) as typeof CodeMirrorModule;
 
-export default CodeMirror;
+module.exports = CodeMirror;

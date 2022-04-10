@@ -40,7 +40,7 @@ export async function generateFormatted(
   console.log(`getIndices: ${Date.now() - start}ms`);
 
   start = Date.now();
-  const formatted = await formatWithMap(code, "  ");
+  const formatted = await formatWithMap("text/javascript", code, "  ");
   console.log(`formatWithMap: ${Date.now() - start}ms`);
 
   start = Date.now();
@@ -107,9 +107,12 @@ export async function generate(
   };
 }
 
-export async function formatOnly(code: string): Promise<CodeWithCoverage> {
+export async function formatOnly(
+  mimeType: string,
+  code: string
+): Promise<CodeWithCoverage> {
   let start = Date.now();
-  const formatted = await formatWithMap(code, "  ");
+  const formatted = await formatWithMap(mimeType, code, "  ");
   console.log(`formatWithMap: ${Date.now() - start}ms`);
 
   start = Date.now();
