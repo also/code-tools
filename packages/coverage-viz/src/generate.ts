@@ -20,6 +20,7 @@ interface Position {
 
 export type CodeWithCoverage = {
   code: string;
+  language: string;
   map: {
     mappings: Int32Array;
     sourceMappings: (Int32Array | undefined)[];
@@ -66,6 +67,7 @@ export async function generateFormatted(
 
   return {
     code: formatted.content,
+    language: "javascript",
     map: { mappings: formattedMappings, sourceMappings },
     sourcesContent: mapJson.sourcesContent || [],
     sourceNames: mapJson.sources || [],
@@ -97,6 +99,7 @@ export async function generate(
 
   return {
     code,
+    language: "javascript",
     map: {
       mappings: originalMappings.mappings,
       sourceMappings,
@@ -107,17 +110,55 @@ export async function generate(
   };
 }
 
-const extensions: Record<string, string> = {
-  "text/html": "html",
-  "text/css": "css",
-  "text/javascript": "js",
+export async function coverageOnly(
+  code: string,
+  c?: ChromeBasicCoverage
+): Promise<CodeWithCoverage> {
+  let start = Date.now();
+  const indices = getIndices(code);
+  console.log(`getIndices: ${Date.now() - start}ms`);
+
+  start = Date.now();
+  const formatted = await formatWithMap("text/html", code, "  ");
+  console.log(`formatWithMap: ${Date.now() - start}ms`);
+
+  start = Date.now();
+
+  start = Date.now();
+  const formattedMappings = await toMappings(formatted.mapping, 0);
+  console.log(`toMappings: ${Date.now() - start}ms`);
+
+  /** maps from formatted to minified */
+  const mappedCoverage = c
+    ? mapCoverageWithMappings(formattedMappings, c, indices)
+    : undefined;
+
+  start = Date.now();
+  const sourceMappings = makeOriginalMappingsUnanlyzed(formattedMappings);
+  console.log(`makeOriginalMappings: ${Date.now() - start}ms`);
+
+  return {
+    code: formatted.content,
+    language: "html",
+    map: { mappings: formattedMappings, sourceMappings },
+    sourcesContent: [code],
+    sourceNames: ["FIXME"],
+    coverage: mappedCoverage,
+  };
+}
+
+const types: Record<string, { extension: string; language: string }> = {
+  "text/html": { extension: "html", language: "html" },
+  "text/css": { extension: "css", language: "css" },
+  "text/javascript": { extension: "js", language: "javascript" },
 };
 
 export async function formatOnly(
   mimeType: string,
   code: string
 ): Promise<CodeWithCoverage> {
-  const filename = `unformatted.${extensions[mimeType] ?? ".txt"}`;
+  const type = types[mimeType] ?? { extension: "txt", language: "text" };
+  const filename = `unformatted.${type.extension}`;
   let start = Date.now();
   const formatted = await formatWithMap(mimeType, code, "  ");
   console.log(`formatWithMap: ${Date.now() - start}ms`);
@@ -131,6 +172,7 @@ export async function formatOnly(
 
   return {
     code: formatted.content,
+    language: type.language,
     map: { mappings: formattedMappings, sourceMappings },
     sourcesContent: [code],
     sourceNames: [filename],

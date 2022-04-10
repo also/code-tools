@@ -20,7 +20,11 @@ let fixCodemirrorResolve = {
 const opts = {
   logLevel: "info",
   plugins: [fixCodemirrorResolve],
-  entryPoints: ["src/index.ts", "src/format-example.ts"],
+  entryPoints: [
+    "src/index.ts",
+    "src/format-example.ts",
+    "src/html-coverage-example.ts",
+  ],
   outdir: "dist",
   bundle: true,
   sourcemap: true,

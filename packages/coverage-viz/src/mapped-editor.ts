@@ -93,7 +93,6 @@ function getHovered(
 }
 
 const options: monacoTypes.editor.IStandaloneEditorConstructionOptions = {
-  language: "javascript",
   readOnly: true,
   automaticLayout: true,
   scrollBeyondLastLine: false,
@@ -187,6 +186,7 @@ export async function showEditor(data: CodeWithCoverage) {
     document.getElementById("generated")!,
     {
       value: data.code,
+      language: data.language,
       ...options,
     }
   );
@@ -196,6 +196,7 @@ export async function showEditor(data: CodeWithCoverage) {
     {
       // TODO create with no model at all by passing null?
       value: "",
+      language: data.language,
       ...options,
     }
   );
