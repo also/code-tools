@@ -1,4 +1,5 @@
 import { describe, expect, test } from "@jest/globals";
+
 const { formatWithMap } =
   require("../lib/index") as typeof import("./index.js");
 

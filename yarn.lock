@@ -9,8 +9,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@also/chrome-devtools-formatter@workspace:packages/chrome-devtools-formatter"
   dependencies:
+    "@types/codemirror": 5.60.5
     "@types/estree": 0.0.50
     acorn: 8.6.0
+    codemirror: 5.61.0
     source-map: 0.7.3
   languageName: unknown
   linkType: soft
@@ -843,6 +845,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/codemirror@npm:5.60.5":
+  version: 5.60.5
+  resolution: "@types/codemirror@npm:5.60.5"
+  dependencies:
+    "@types/tern": "*"
+  checksum: 423b6378b6415b626d9f54d37d69477f96940b30a695d4ec36402feb59a96f7ab42d1c17b8472fbb222a0966f6061deee234e37bcd3e34c75836e989dc95929d
+  languageName: node
+  linkType: hard
+
+"@types/estree@npm:*":
+  version: 0.0.51
+  resolution: "@types/estree@npm:0.0.51"
+  checksum: e56a3bcf759fd9185e992e7fdb3c6a5f81e8ff120e871641607581fb3728d16c811702a7d40fa5f869b7f7b4437ab6a87eb8d98ffafeee51e85bbe955932a189
+  languageName: node
+  linkType: hard
+
 "@types/estree@npm:0.0.50":
   version: 0.0.50
   resolution: "@types/estree@npm:0.0.50"
@@ -909,6 +927,15 @@ __metadata:
   version: 2.0.1
   resolution: "@types/stack-utils@npm:2.0.1"
   checksum: 205fdbe3326b7046d7eaf5e494d8084f2659086a266f3f9cf00bccc549c8e36e407f88168ad4383c8b07099957ad669f75f2532ed4bc70be2b037330f7bae019
+  languageName: node
+  linkType: hard
+
+"@types/tern@npm:*":
+  version: 0.23.4
+  resolution: "@types/tern@npm:0.23.4"
+  dependencies:
+    "@types/estree": "*"
+  checksum: d8fd304f147ed08f1d075f09cb8d440b7f785f69c9ec5c30eadf98132fe3f58f3b1bbbd11283858bb261afac5a2039c1c255f290b0f6e4a47cd6a746f30a6aa8
   languageName: node
   linkType: hard
 
@@ -1542,6 +1569,13 @@ __metadata:
     typescript: 4.6.3
   languageName: unknown
   linkType: soft
+
+"codemirror@npm:5.61.0":
+  version: 5.61.0
+  resolution: "codemirror@npm:5.61.0"
+  checksum: d9081d4937fc237c972e12538721b47817a08557a30d692b32e09849977e5d91ca6c8984cdea417cf11a163fdbc3c7139fd66cefc6fcf32047c8cbecd21d2715
+  languageName: node
+  linkType: hard
 
 "collect-v8-coverage@npm:^1.0.0":
   version: 1.0.1
