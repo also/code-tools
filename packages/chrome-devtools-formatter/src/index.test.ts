@@ -149,3 +149,15 @@ Array [
 `);
   });
 });
+
+describe("convertPositionFormatted", () => {
+  test("converts", async () => {
+    const formatted = await formatWithMap(
+      "text/javascript",
+      "const x = 1;\nconst y = 2;\nconst z = 3;\n",
+      "  "
+    );
+
+    expect(formatted.mapping.convertPositionFormatted(5)).toBe(5);
+  });
+});

@@ -1,4 +1,5 @@
 import { findNearestMapping } from "@also/source-maps/lib/search";
+import { Mapper } from "@also/chrome-devtools-formatter/lib";
 import { ChromeBasicCoverage, V8Coverage } from "./types.js";
 
 // https://github.com/vfile/vfile-location/blob/a2322512ec2c5949bfbc9566f7aab43720cf22ce/index.js
@@ -83,8 +84,52 @@ export interface MappedCoverageEntry extends CoverageEntry {
 }
 
 export interface MappedCoverage {
+  type: "mapped";
   coverage: MappedCoverageEntry[];
   mappingRangeIndices: Int32Array;
+}
+
+export interface FormattedCoverage {
+  type: "formatted";
+  unformattedCoverage: CoverageEntry[];
+  formattedCoverage: CoverageEntry[];
+}
+
+export function formatCoverage(
+  mapper: Mapper,
+  coverage: ChromeBasicCoverage
+): FormattedCoverage {
+  return {
+    type: "formatted",
+
+    unformattedCoverage: coverage.ranges.map((r) => {
+      const [startline, startColumn] = mapper.positionToLocationOriginal(
+        r.start
+      );
+      const [endline, endColumn] = mapper.positionToLocationOriginal(r.end);
+
+      return {
+        start: { line: startline, column: startColumn },
+        end: { line: endline, column: endColumn },
+      };
+    }),
+
+    formattedCoverage: coverage.ranges.map((r) => {
+      const [startline, startColumn] = mapper.positionToLocationFormatted(
+        mapper.convertPositionOriginal(r.start)
+      );
+      const [endLine, endColumn] = mapper.positionToLocationFormatted(
+        mapper.convertPositionOriginal(r.end)
+      );
+      return {
+        start: { line: startline, column: startColumn },
+        end: {
+          line: endLine,
+          column: endColumn,
+        },
+      };
+    }),
+  };
 }
 
 export function mapCoverageWithMappings(
@@ -154,7 +199,11 @@ export function mapCoverageWithMappings(
     i++;
   }
 
-  return { coverage: result, mappingRangeIndices };
+  return {
+    type: "mapped",
+    coverage: result,
+    mappingRangeIndices,
+  };
 }
 
 export function makeOriginalCoverage(

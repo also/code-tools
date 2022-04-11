@@ -1,4 +1,5 @@
 import * as FormatterActions from "./vendor/entrypoints/formatter_worker/FormatterActions.js";
+import * as Platform from "./vendor/core/platform/platform.js";
 import {
   formatScriptContent,
   positionToLocation,
@@ -6,6 +7,28 @@ import {
 
 // TODO is there any point in keeping the separate module around?
 import "./formatter.js";
+
+export function convertPosition(
+  positions1: number[],
+  positions2: number[],
+  position: number
+): number {
+  const index =
+    Platform.ArrayUtilities.upperBound(
+      positions1,
+      position,
+      Platform.ArrayUtilities.DEFAULT_COMPARATOR
+    ) - 1;
+  let convertedPosition: number =
+    positions2[index] + position - positions1[index];
+  if (
+    index < positions2.length - 1 &&
+    convertedPosition > positions2[index + 1]
+  ) {
+    convertedPosition = positions2[index + 1];
+  }
+  return convertedPosition;
+}
 
 export async function formatWithMap(
   mimeType: string,
@@ -42,6 +65,22 @@ export class Mapper {
 
   positionToLocationFormatted(formattedPosition: number) {
     return positionToLocation(this.formattedLineEndings, formattedPosition);
+  }
+
+  convertPositionOriginal(originalPosition: number) {
+    return convertPosition(
+      this.mapping.original,
+      this.mapping.formatted,
+      originalPosition
+    );
+  }
+
+  convertPositionFormatted(formattedPosition: number) {
+    return convertPosition(
+      this.mapping.formatted,
+      this.mapping.original,
+      formattedPosition
+    );
   }
 
   *iterateMappings() {
