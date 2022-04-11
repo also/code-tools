@@ -108,14 +108,14 @@ export async function generate(
 }
 
 export async function coverageOnly(
-  mimeType: string,
+  type: FileType,
   code: string,
   c?: ChromeBasicCoverage
 ): Promise<CodeWithCoverage> {
   let start;
 
   start = Date.now();
-  const formatted = await formatWithMap(mimeType, code, "  ");
+  const formatted = await formatWithMap(type.mimeType, code, "  ");
   console.log(`formatWithMap: ${Date.now() - start}ms`);
 
   start = Date.now();
@@ -133,8 +133,7 @@ export async function coverageOnly(
 
   return {
     code: formatted.content,
-    // FIXME
-    language: "html",
+    language: type.language,
     map: { mappings: formattedMappings, sourceMappings },
     sourcesContent: [code],
     sourceNames: [c?.url ?? "FIXME"],
@@ -142,28 +141,38 @@ export async function coverageOnly(
   };
 }
 
-const types: Record<string, { extension: string; language: string }> = {
-  "text/html": { extension: "html", language: "html" },
-  "text/css": { extension: "css", language: "css" },
-  "text/javascript": { extension: "js", language: "javascript" },
+interface FileType {
+  extension: string;
+  language: string;
+  mimeType: string;
+}
+
+export const types: Record<string, FileType> = {
+  "text/html": { extension: "html", language: "html", mimeType: "text/html" },
+  "text/css": { extension: "css", language: "css", mimeType: "text/css" },
+  "text/javascript": {
+    extension: "js",
+    language: "javascript",
+    mimeType: "text/javascript",
+  },
 };
 
-export function getMimeType(filename: string) {
-  for (const [mimeType, { extension }] of Object.entries(types)) {
-    if (filename.endsWith(`.${extension}`)) {
-      return mimeType;
+export function getMimeType(filename: string): FileType {
+  for (const v of Object.values(types)) {
+    if (filename.endsWith(`.${v.extension}`)) {
+      return v;
     }
   }
+  return { extension: "txt", language: "text", mimeType: "text/plain" };
 }
 
 export async function formatOnly(
-  mimeType: string,
+  type: FileType,
   code: string
 ): Promise<CodeWithCoverage> {
-  const type = types[mimeType] ?? { extension: "txt", language: "text" };
   const filename = `unformatted.${type.extension}`;
   let start = Date.now();
-  const formatted = await formatWithMap(mimeType, code, "  ");
+  const formatted = await formatWithMap(type.mimeType, code, "  ");
   console.log(`formatWithMap: ${Date.now() - start}ms`);
 
   start = Date.now();
