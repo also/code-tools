@@ -1,4 +1,6 @@
 import {
+  formatCoverage,
+  FormattedCoverage,
   getIndices,
   mapCoverageWithMappings,
   MappedCoverage,
@@ -13,11 +15,6 @@ import {
   readMappings,
 } from "@also/source-maps/lib/parse";
 
-interface Position {
-  line: number;
-  column: number;
-}
-
 export type CodeWithCoverage = {
   code: string;
   language: string;
@@ -27,7 +24,7 @@ export type CodeWithCoverage = {
   };
   sourcesContent: string[];
   sourceNames: string[];
-  coverage: MappedCoverage | undefined;
+  coverage: MappedCoverage | FormattedCoverage | undefined;
 };
 
 export async function generateFormatted(
@@ -115,24 +112,20 @@ export async function coverageOnly(
   code: string,
   c?: ChromeBasicCoverage
 ): Promise<CodeWithCoverage> {
-  let start = Date.now();
-  const indices = getIndices(code);
-  console.log(`getIndices: ${Date.now() - start}ms`);
+  let start;
 
   start = Date.now();
   const formatted = await formatWithMap(mimeType, code, "  ");
   console.log(`formatWithMap: ${Date.now() - start}ms`);
 
   start = Date.now();
-
-  start = Date.now();
   const formattedMappings = await toMappings(formatted.mapping, 0);
   console.log(`toMappings: ${Date.now() - start}ms`);
 
+  start = Date.now();
   /** maps from formatted to minified */
-  const mappedCoverage = c
-    ? mapCoverageWithMappings(formattedMappings, c, indices)
-    : undefined;
+  const mappedCoverage = c ? formatCoverage(formatted.mapping, c) : undefined;
+  console.log(`formatCoverage: ${Date.now() - start}ms`);
 
   start = Date.now();
   const sourceMappings = makeOriginalMappingsUnanlyzed(formattedMappings);
@@ -140,6 +133,7 @@ export async function coverageOnly(
 
   return {
     code: formatted.content,
+    // FIXME
     language: "html",
     map: { mappings: formattedMappings, sourceMappings },
     sourcesContent: [code],
