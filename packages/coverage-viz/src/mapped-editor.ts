@@ -291,7 +291,7 @@ export async function showEditor(data: CodeWithCoverage) {
         if (original.data) {
           const coverage = makeOriginalCoverage(
             data.coverage,
-            original.data!.mappings
+            original.data.mappings
           );
           updateCoverageDecorations(original, coverage);
         } else {
