@@ -207,9 +207,14 @@ export function mapCoverageWithMappings(
 }
 
 export function makeOriginalCoverage(
-  mappedCoverage: MappedCoverage,
+  mappedCoverage: MappedCoverage | FormattedCoverage,
   originalMappings: Int32Array
 ) {
+  if (mappedCoverage.type === "formatted") {
+    // TODO does this make sense? seems like this should be a separate mode where we know there's only one source
+    return mappedCoverage.unformattedCoverage;
+  }
+
   const result: CoverageEntry[] = [];
   for (let i = 0; i < originalMappings.length; i += 6) {
     const index = originalMappings[i + 5];

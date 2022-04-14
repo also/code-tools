@@ -294,11 +294,10 @@ export async function showEditor(data: CodeWithCoverage) {
       original.model.setValue(original?.data?.value ?? "");
       if (data.coverage) {
         if (original.data) {
-          const coverage =
-            data.coverage.type === "mapped"
-              ? makeOriginalCoverage(data.coverage, original.data.mappings)
-              : // TODO does this make sense? seems like this should be a separate mode where we know there's only one source
-                data.coverage.unformattedCoverage;
+          const coverage = makeOriginalCoverage(
+            data.coverage,
+            original.data.mappings
+          );
           updateCoverageDecorations(original, coverage);
         } else {
           updateCoverageDecorations(original, []);
