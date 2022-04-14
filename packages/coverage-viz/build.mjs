@@ -23,6 +23,7 @@ const opts = {
   entryPoints: [
     "src/app.ts",
     "src/examples/coverage-with-map.ts",
+    "src/examples/map.ts",
     "src/examples/format.ts",
     "src/examples/html-coverage.ts",
   ],
