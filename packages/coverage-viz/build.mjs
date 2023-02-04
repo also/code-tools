@@ -1,6 +1,8 @@
-import { serve, build } from "esbuild";
-
+import path from "path";
+import { fileURLToPath } from "url";
 import { createRequire } from "module";
+
+import { serve, build } from "esbuild";
 
 const require = createRequire(import.meta.url);
 
@@ -18,6 +20,7 @@ let fixCodemirrorResolve = {
 };
 
 const opts = {
+  absWorkingDir: path.dirname(fileURLToPath(import.meta.url)),
   logLevel: "info",
   plugins: [fixCodemirrorResolve],
   entryPoints: [

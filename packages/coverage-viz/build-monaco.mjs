@@ -1,4 +1,5 @@
 import path from "path";
+import { fileURLToPath } from "url";
 import { build } from "esbuild";
 import { createRequire } from "module";
 
@@ -15,6 +16,7 @@ const workerEntryPoints = [
 const monaco = path.dirname(require.resolve("monaco-editor/package.json"));
 
 build({
+  absWorkingDir: path.dirname(fileURLToPath(import.meta.url)),
   logLevel: "info",
   entryPoints: workerEntryPoints.map((entry) => `${monaco}/esm/${entry}`),
   bundle: true,
