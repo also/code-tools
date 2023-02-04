@@ -4,6 +4,8 @@ importers:
 
   .:
     specifiers:
+      '@jest/globals': 27.5.1
+      '@types/node': 16.18.11
       '@typescript-eslint/eslint-plugin': ^5.15.0
       '@typescript-eslint/parser': ^5.15.0
       eslint: ^8.11.0
@@ -11,6 +13,8 @@ importers:
       ts-jest: 27.1.4
       typescript: 4.6.3
     devDependencies:
+      '@jest/globals': 27.5.1
+      '@types/node': 16.18.11
       '@typescript-eslint/eslint-plugin': 5.17.0_ncp7kzlvh3hxymziyb722bt56u
       '@typescript-eslint/parser': 5.17.0_thk3xo4exzjr5rl6cnexo7v6re
       eslint: 8.12.0
@@ -50,8 +54,10 @@ importers:
 
   packages/mapped-coverage:
     specifiers:
+      '@also/chrome-devtools-formatter': workspace:*
       '@also/source-maps': workspace:*
     dependencies:
+      '@also/chrome-devtools-formatter': link:../chrome-devtools-formatter
       '@also/source-maps': link:../source-maps
 
   packages/source-maps:
@@ -751,6 +757,10 @@ packages:
 
   /@types/json-schema/7.0.11:
     resolution: {integrity: sha512-wOuvG1SN4Us4rez+tylwwwCV1psiNVOkJeM3AUWUNWg/jDQY2+HE/444y5gc+jBmRqASOm2Oeh5c1axHobwRKQ==}
+    dev: true
+
+  /@types/node/16.18.11:
+    resolution: {integrity: sha512-3oJbGBUWuS6ahSnEq1eN2XrCyf4YsWI8OyCvo7c64zQJNplk3mO84t53o8lfTk+2ji59g5ycfc6qQ3fdHliHuA==}
     dev: true
 
   /@types/node/17.0.23:

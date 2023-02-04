@@ -2,6 +2,7 @@
   "name": "@also/mapped-coverage",
   "version": "0.1.0",
   "dependencies": {
+    "@also/chrome-devtools-formatter": "workspace:*",
     "@also/source-maps": "workspace:*"
   }
 }
