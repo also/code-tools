@@ -7,4 +7,12 @@ module.exports = {
     "@typescript-eslint/no-non-null-assertion": "off",
     "no-constant-condition": ["error", { checkLoops: false }],
   },
+  overrides: [
+    {
+      files: ["jest.config*.js", ".eslintrc.js"],
+      env: {
+        node: true,
+      },
+    },
+  ],
 };
