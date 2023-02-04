@@ -9,7 +9,7 @@ module.exports = {
   },
   overrides: [
     {
-      files: ["jest.config*.js", ".eslintrc.js"],
+      files: ["jest.config*.js", ".eslintrc.js", "build*.mjs"],
       env: {
         node: true,
       },
