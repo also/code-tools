@@ -1,5 +1,3 @@
-import { ChromeBasicCoverage } from "@also/mapped-coverage/lib/types";
-
 import { generateFormatted } from "../generate.js";
 import { showEditor } from "../mapped-editor.js";
 

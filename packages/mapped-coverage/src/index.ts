@@ -218,7 +218,7 @@ export function makeOriginalCoverage(
   const result: CoverageEntry[] = [];
   for (let i = 0; i < originalMappings.length; i += 6) {
     const index = originalMappings[i + 5];
-    let covered = mappedCoverage.mappingRangeIndices[index / 6] !== -1;
+    const covered = mappedCoverage.mappingRangeIndices[index / 6] !== -1;
 
     if (covered) {
       const firstMapping = i;

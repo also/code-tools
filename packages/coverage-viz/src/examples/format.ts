@@ -5,6 +5,7 @@ async function run() {
   const start = Date.now();
   const data = await formatOnly(
     getMimeType(".html"),
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     require("./format.html.txt")
   );
   const end = Date.now();
