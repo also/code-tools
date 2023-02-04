@@ -10,3 +10,5 @@ node packages/coverage-viz/build.mjs serve
 ```
 
 http://localhost:8000/app.html
+
+http://localhost:8000/examples/
