@@ -2,7 +2,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { createRequire } from "module";
 
-import { serve, build } from "esbuild";
+import { context, build } from "esbuild";
 
 const require = createRequire(import.meta.url);
 
@@ -40,12 +40,17 @@ const opts = {
   },
 };
 
-const mode = process.argv[2] || "build";
-
-if (mode === "build") {
-  build(opts);
-} else if (mode === "watch") {
-  build({ ...opts, watch: true });
-} else if (mode === "serve") {
-  serve({ servedir: "." }, opts);
+async function run(mode) {
+  if (mode === "build") {
+    build(opts);
+  } else if (mode === "watch") {
+    build({ ...opts, watch: true });
+  } else if (mode === "serve") {
+    (await context(opts)).serve({ servedir: "." });
+  }
 }
+
+run(process.argv[2] || "build").catch((e) => {
+  console.error(e);
+  process.exit(1);
+});
