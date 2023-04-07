@@ -14,6 +14,7 @@ jobs:
           version: 7
       - run: pnpm i
       - run: pnpm build
+      - run: node packages/coverage-viz/build.mjs
       - run: node packages/coverage-viz/build-monaco.mjs
       - name: Publish
         uses: cloudflare/pages-action@1
