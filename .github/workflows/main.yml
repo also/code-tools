@@ -1,0 +1,17 @@
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
+      with:
+        node-version-file: '.node-version'
+    - uses: pnpm/action-setup@v2
+      with:
+        version: 7
+    - run: pnpm i
+    - run: pnpm build
+    - run: node packages/coverage-viz/build-monaco.mjs
