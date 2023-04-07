@@ -1,5 +1,7 @@
 # code-tools
 
+![](packages/coverage-viz/coverage-with-map.png)
+
 ## Local development
 
 ```
