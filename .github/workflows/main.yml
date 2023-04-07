@@ -10,4 +10,6 @@ jobs:
       with:
         node-version-file: '.node-version'
     - uses: pnpm/action-setup@v2
+      with:
+        version: 7
     - run: pnpm i
