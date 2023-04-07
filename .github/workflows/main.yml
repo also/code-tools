@@ -3,15 +3,24 @@ on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
-      with:
-        node-version-file: '.node-version'
-    - uses: pnpm/action-setup@v2
-      with:
-        version: 7
-    - run: pnpm i
-    - run: pnpm build
-    - run: node packages/coverage-viz/build-monaco.mjs
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: ".node-version"
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 7
+      - run: pnpm i
+      - run: pnpm build
+      - run: node packages/coverage-viz/build.mjs
+      - run: node packages/coverage-viz/build-monaco.mjs
+      - name: Publish
+        uses: cloudflare/pages-action@1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: cov
+          directory: packages/coverage-viz
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
