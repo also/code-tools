@@ -13,3 +13,5 @@ jobs:
       with:
         version: 7
     - run: pnpm i
+    - run: pnpm build
+    - run: node packages/coverage-viz/build-monaco.mjs
