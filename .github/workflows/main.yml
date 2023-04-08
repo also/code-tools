@@ -39,3 +39,30 @@ jobs:
           projectName: cov
           directory: site
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+
+  deploy-vercel:
+    needs: build
+    runs-on: ubuntu-latest
+
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+    steps:
+      - uses: actions/setup-node@v3
+      - uses: actions/download-artifact@v3
+        with:
+          name: site
+          path: .vercel/output/static
+      - run: |
+          echo '{"version": 3}' > .vercel/output/config.json
+      - name: Install Vercel CLI
+        run: npm i -g vercel
+      - name: Pull Vercel Preview Environment Information
+        if: ${{ github.ref != 'refs/heads/main' }}
+        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Pull Vercel Prod Environment Information
+        if: ${{ github.ref == 'refs/heads/main' }}
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Deploy Project Artifacts to Vercel
+        run: vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
