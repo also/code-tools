@@ -16,11 +16,7 @@ jobs:
       - run: pnpm build
       - run: node packages/coverage-viz/build.mjs
       - run: node packages/coverage-viz/build-monaco.mjs
-      - name: Publish
-        uses: cloudflare/pages-action@1
+      - uses: actions/upload-artifact@v3
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: cov
-          directory: packages/coverage-viz
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          name: coverage-viz
+          path: packages/coverage-viz
