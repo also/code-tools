@@ -16,11 +16,26 @@ jobs:
       - run: pnpm build
       - run: node packages/coverage-viz/build.mjs
       - run: node packages/coverage-viz/build-monaco.mjs
+      - run: pnpm -C packages/coverage-viz build-site
+      - uses: actions/upload-artifact@v3
+        with:
+          name: site
+          path: packages/coverage-viz/site
+
+  deploy-cloudflare-pages:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: site
+          path: site
       - name: Publish
         uses: cloudflare/pages-action@1
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           projectName: cov
-          directory: packages/coverage-viz
+          directory: site
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
