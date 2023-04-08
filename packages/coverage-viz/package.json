@@ -9,5 +9,8 @@
   },
   "devDependencies": {
     "esbuild": "0.17.5"
+  },
+  "scripts": {
+    "build-site": "bash scripts/build-site.sh"
   }
 }
