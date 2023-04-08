@@ -30,6 +30,7 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: site
+          path: site
       - name: Publish
         uses: cloudflare/pages-action@1
         with:
