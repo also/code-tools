@@ -1,7 +1,9 @@
 import { ChromeBasicCoverage } from "@also/mapped-coverage/lib/types";
 import { coverageOnly, getMimeType } from "./generate.js";
 import { showEditor } from "./mapped-editor.js";
+import "./simple-app.css";
 
+const div = document.getElementById("initial-ui")!;
 const fileInput = document.getElementById("file") as HTMLInputElement;
 fileInput.addEventListener("change", function () {
   const files = this.files;
@@ -16,8 +18,7 @@ fileInput.addEventListener("change", function () {
       select.addEventListener("change", async function () {
         const selected = this.value;
         if (selected !== "") {
-          select.remove();
-          fileInput.remove();
+          div.remove();
           const index = parseInt(selected);
           const coverageFile = coverage[index];
           const data = await coverageOnly(
@@ -39,7 +40,7 @@ fileInput.addEventListener("change", function () {
         option.textContent = c.url;
         select.appendChild(option);
       });
-      document.body.appendChild(select);
+      div.appendChild(select);
     };
     reader.readAsText(file);
   }

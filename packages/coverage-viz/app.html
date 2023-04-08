@@ -7,7 +7,17 @@
   <body>
     <header>Source Maps and Code Coverage Visualizer</header>
     <main>
-      <div id="app"><input type="file" id="file" /></div>
+      <div id="app">
+        <div id="initial-ui">
+          <p>
+            Load a coverage file exported from the
+            <a href="https://developer.chrome.com/docs/devtools/coverage/"
+              >Chrome DevTools</a
+            >
+          </p>
+          <input type="file" id="file" />
+        </div>
+      </div>
     </main>
     <script src="../dist/app.js" type="module"></script>
   </body>
