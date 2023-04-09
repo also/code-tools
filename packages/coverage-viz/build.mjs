@@ -32,9 +32,11 @@ const opts = {
   ],
   outbase: "src",
   outdir: "dist",
+  format: "esm",
   bundle: true,
   sourcemap: true,
   minify: true,
+  splitting: true,
   loader: {
     ".ttf": "file",
   },
