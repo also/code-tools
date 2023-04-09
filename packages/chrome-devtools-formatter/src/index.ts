@@ -50,6 +50,19 @@ export async function formatWithMap(
   return { mapping, content: formatted.formattedContent };
 }
 
+export interface Mapping {
+  generated: {
+    line: number;
+    column: number;
+    offset: number;
+  };
+  original: {
+    line: number;
+    column: number;
+    offset: number;
+  };
+}
+
 export class Mapper {
   constructor(
     public original: string,
@@ -83,7 +96,7 @@ export class Mapper {
     );
   }
 
-  *iterateMappings() {
+  *iterateMappings(): Generator<Mapping> {
     for (let i = 0; i < this.mapping.formatted.length; i++) {
       const generated = this.positionToLocationFormatted(
         this.mapping.formatted[i]
