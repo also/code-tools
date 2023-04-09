@@ -21,6 +21,7 @@ jobs:
         with:
           name: site
           path: packages/coverage-viz/site
+          retention-days: 1
 
   deploy-cloudflare-pages:
     needs: build
